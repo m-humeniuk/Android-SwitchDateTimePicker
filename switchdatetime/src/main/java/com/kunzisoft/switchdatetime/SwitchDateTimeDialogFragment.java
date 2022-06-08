@@ -1,21 +1,18 @@
 package com.kunzisoft.switchdatetime;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ViewAnimator;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import com.kunzisoft.switchdatetime.date.OnYearSelectedListener;
@@ -65,7 +62,6 @@ public class SwitchDateTimeDialogFragment extends DialogFragment {
     private String mPositiveButton;
     private String mDefaultLocale;
     private String mNegativeButton;
-    private String mNeutralButton;
     private OnButtonClickListener mListener;
 
     private boolean is24HoursMode = false;
@@ -144,10 +140,16 @@ public class SwitchDateTimeDialogFragment extends DialogFragment {
         super.onSaveInstanceState(savedInstanceState);
     }
 
+
+    @Nullable
     @Override
-    public @NonNull
-    Dialog onCreateDialog(Bundle savedInstanceState) {
-        super.onCreateDialog(savedInstanceState);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.dialog_switch_datetime_picker, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         assert getActivity() != null;
         assert getContext() != null;
@@ -158,7 +160,6 @@ public class SwitchDateTimeDialogFragment extends DialogFragment {
             mLabel = getArguments().getString(TAG_LABEL);
             mPositiveButton = getArguments().getString(TAG_POSITIVE_BUTTON);
             mNegativeButton = getArguments().getString(TAG_NEGATIVE_BUTTON);
-            mNeutralButton = getArguments().getString(TAG_NEUTRAL_BUTTON);
             mDefaultLocale=getArguments().getString(TAG_DEFAULT_LOCALE);
         }
         setDefaultLocale(mDefaultLocale);
@@ -173,10 +174,8 @@ public class SwitchDateTimeDialogFragment extends DialogFragment {
             throw new RuntimeException("Default date " + dateTimeCalendar.getTime() + " must be between "
                     + minimumDateTime.getTime() + " and " + maximumDateTime.getTime());
 
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
         getActivity().getTheme().applyStyle(R.style.Theme_SwitchDateTime, false);
-        View dateTimeLayout = inflater.inflate(R.layout.dialog_switch_datetime_picker,
-                (ViewGroup) getActivity().findViewById(R.id.datetime_picker));
+        View dateTimeLayout = view.findViewById(R.id.datetime_picker);
 
         // Set label
         TextView labelView = dateTimeLayout.findViewById(R.id.label);
@@ -225,18 +224,6 @@ public class SwitchDateTimeDialogFragment extends DialogFragment {
         if (startAtPosition != UNDEFINED_POSITION)
             currentPosition = startAtPosition;
         viewSwitcher.setDisplayedChild(currentPosition);
-
-        // Button for switch between Hours/Minutes, Calendar and YearList
-        ImageButton buttonSwitch = dateTimeLayout.findViewById(R.id.button_switch);
-        buttonSwitch.setBackgroundColor(Color.TRANSPARENT);
-        buttonSwitch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Utils.animLabelElement(view);
-                if (!(blockAnimationIn && blockAnimationOut))
-                    viewSwitcher.showNext();
-            }
-        });
 
         // Values header hourOfDay minutes
         View timeHeaderValues = dateTimeLayout.findViewById(R.id.time_header_values);
@@ -326,47 +313,33 @@ public class SwitchDateTimeDialogFragment extends DialogFragment {
             }
         });
 
-        // Assign buttons
-        AlertDialog.Builder db;
-        if (alertStyleId != 0) {
-            db = new AlertDialog.Builder(getContext(), alertStyleId);
-        } else {
-            db = new AlertDialog.Builder(getContext());
-        }
-        db.setView(dateTimeLayout);
+        TextView positiveButton = view.findViewById(R.id.positiveButton);
+        TextView negativeButton = view.findViewById(R.id.negativeButton);
+
         if (mPositiveButton == null)
             mPositiveButton = getString(android.R.string.ok);
-        db.setPositiveButton(mPositiveButton, new
-                DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (mListener != null) {
-                            mListener.onPositiveButtonClick(dateTimeCalendar.getTime());
-                        }
-                    }
-                });
+
+        positiveButton.setText(mPositiveButton);
+        positiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onPositiveButtonClick(dateTimeCalendar.getTime());
+                }
+            }
+        });
+
         if (mNegativeButton == null)
             mNegativeButton = getString(android.R.string.cancel);
-        db.setNegativeButton(mNegativeButton, new
-                DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Close dialog
-                        if (mListener != null) {
-                            mListener.onNegativeButtonClick(dateTimeCalendar.getTime());
-                        }
-                    }
-                });
-        if (mNeutralButton != null) {
-            db.setNeutralButton(mNeutralButton, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (mListener != null) {
-                        if (mListener instanceof OnButtonWithNeutralClickListener)
-                            ((OnButtonWithNeutralClickListener) mListener).onNeutralButtonClick(dateTimeCalendar.getTime());
-                    }
+        negativeButton.setText(mNegativeButton);
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onNegativeButtonClick(dateTimeCalendar.getTime());
                 }
-            });
-        }
-        return db.create();
+            }
+        });
     }
 
     private void setDefaultLocale(String mDefaultLocale) {
@@ -375,6 +348,14 @@ public class SwitchDateTimeDialogFragment extends DialogFragment {
         Configuration config = new Configuration();
         config.locale = locale;
         getResources().updateConfiguration(config,getResources().getDisplayMetrics());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getDialog().getWindow().setLayout(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     @Override

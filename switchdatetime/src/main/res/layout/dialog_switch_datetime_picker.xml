@@ -1,146 +1,162 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/datetime_picker"
+    style="@style/Theme.SwitchDateTime"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    style="@style/Theme.SwitchDateTime"
     android:orientation="vertical">
+
     <LinearLayout
         android:id="@+id/section_add"
         style="@style/Theme.SwitchDateTime.HeaderBackground"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/calendar_width_portrait"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:background="@android:color/holo_red_dark">
 
-        <RelativeLayout
-            android:id="@+id/label_header"
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/label"
+            style="@style/Theme.SwitchDateTime.TitleDateTimeLabelText"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:paddingStart="10dp"
-            android:paddingRight="10dp"
-            android:paddingEnd="10dp">
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:text="@string/label_datetime_dialog" />
 
-            <androidx.appcompat.widget.AppCompatImageButton
-                android:id="@+id/button_switch"
-                style="@style/Theme.SwitchDateTime.IconDateTimeSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_view_carousel_black_32dp"
-                android:contentDescription="@string/img_datetime"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/label_datetime_dialog"
-                style="@style/Theme.SwitchDateTime.TitleDateTimeLabelText"
-                android:padding="5dp"
-                android:gravity="center_vertical"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_toLeftOf="@+id/button_switch"
-                android:layout_toStartOf="@+id/button_switch" />
-        </RelativeLayout>
-
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/value_dateTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp" >
+            android:padding="16dp">
 
             <include
                 android:id="@+id/time_header_values"
                 layout="@layout/time_header_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <TextView
                 android:id="@+id/date_picker_year"
                 style="@style/Theme.SwitchDateTime.DateLabelYear"
-                android:gravity="top|end"
-                android:layout_gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
+                android:layout_gravity="center"
+                android:gravity="top|end"
                 android:includeFontPadding="false"
-                android:layout_above="@+id/date_picker_month_and_day" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="TEst" />
 
             <TextView
                 android:id="@+id/date_picker_month_and_day"
+                style="@style/Theme.SwitchDateTime.DateLabelMonthAndDay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                style="@style/Theme.SwitchDateTime.DateLabelMonthAndDay"
                 android:layout_below="@id/time_header_values"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginRight="6dp"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="end"
                 android:layout_marginEnd="6dp"
-                android:clickable="true" />
+                android:layout_marginRight="6dp"
+                android:clickable="true"
+                app:layout_constraintStart_toStartOf="@id/date_picker_year"
+                app:layout_constraintTop_toBottomOf="@id/date_picker_year"
+                tools:text="Test" />
 
-        </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
+
     <ViewFlipper
         android:id="@+id/dateSwitcher"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         style="@style/Theme.SwitchDateTime.ContentBackground"
+        android:layout_width="@dimen/calendar_width_portrait"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:inAnimation="@anim/dialog_enter_from_right"
-        android:outAnimation="@anim/dialog_leave_to_left"
-        android:layout_gravity="center">
+        android:outAnimation="@anim/dialog_leave_to_left">
+
         <LinearLayout
             android:id="@+id/timePicker"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:focusable="true"
             android:gravity="center"
-            android:orientation="vertical"
-            android:focusable="true" >
+            android:orientation="vertical">
+
             <com.kunzisoft.switchdatetime.time.RadialPickerLayout
                 android:id="@+id/time_picker"
-                android:layout_height="@dimen/time_circle_width"
+                style="@style/Theme.SwitchDateTime.Time"
                 android:layout_width="@dimen/time_circle_width"
+                android:layout_height="@dimen/time_circle_width"
                 android:layout_gravity="center"
                 android:focusable="true"
-                android:focusableInTouchMode="true"
-                style="@style/Theme.SwitchDateTime.Time" />
+                android:focusableInTouchMode="true" />
+
         </LinearLayout>
 
         <FrameLayout
             android:layout_width="@dimen/calendar_width_portrait"
             android:layout_height="@dimen/calendar_height_portrait"
+            android:paddingTop="16dp"
             android:layout_gravity="center">
-            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
-                xmlns:calendar="http://schemas.android.com/apk/res-auto"
+
+            <com.prolificinteractive.materialcalendarview.MaterialCalendarView xmlns:calendar="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/datePicker"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                calendar:mcv_showOtherDates="all"
                 style="@style/Theme.SwitchDateTime.Date"
-                />
+                android:layout_width="@dimen/calendar_width_portrait"
+                android:layout_height="match_parent"
+                calendar:mcv_showOtherDates="all" />
+
         </FrameLayout>
 
 
-        <com.kunzisoft.switchdatetime.date.widget.ListPickerYearView
-            xmlns:year="http://schemas.android.com/apk/res-auto"
+        <com.kunzisoft.switchdatetime.date.widget.ListPickerYearView xmlns:year="http://schemas.android.com/apk/res-auto"
             android:id="@+id/yearPicker"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            year:minYear="1970"
-            year:maxYear="2200"
+            android:layout_width="@dimen/calendar_width_portrait"
+            android:layout_height="@dimen/calendar_height_portrait"
             year:defaultYear="2016"
-            />
+            year:maxYear="2200"
+            year:minYear="1970" />
+
     </ViewFlipper>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:layout_gravity="end">
+
+        <TextView
+            android:id="@+id/negativeButton"
+            style="@style/Theme.SwitchDateTime.Buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foreground="?selectableItemBackground"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:textAllCaps="true"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="Cancel" />
+
+        <TextView
+            android:id="@+id/positiveButton"
+            style="@style/Theme.SwitchDateTime.Buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foreground="?selectableItemBackground"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:textAllCaps="true"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:text="Ok" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
 </LinearLayout>
